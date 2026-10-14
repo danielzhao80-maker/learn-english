@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>爸爸学英语 / Learn English</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    color: #1f2937;
+    padding: 16px;
+  }
+  .app { max-width: 720px; margin: 0 auto; }
+
+  header { text-align: center; padding: 20px 0 28px; }
+  h1 { font-size: 32px; color: #b45309; }
+  h1 small {
+    display: block; font-size: 18px; color: #92400e;
+    margin-top: 4px; font-weight: normal;
+  }
+  .subtitle {
+    text-align: center; margin-top: 8px;
+    color: #92400e; font-size: 16px;
+  }
+
+  .start-btn {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 28px;
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 28px 24px;
+    border-radius: 22px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 6px 0 #047857;
+  }
+  .start-btn:active { transform: translateY(2px); box-shadow: 0 4px 0 #047857; }
+  .start-btn small {
+    display: block; font-size: 16px; font-weight: normal;
+    margin-top: 4px; opacity: 0.9;
+  }
+  .home-divider {
+    text-align: center;
+    color: #92400e;
+    font-size: 14px;
+    margin: 20px 0 14px;
+    font-weight: bold;
+  }
+
+  .daily-card {
+    max-width: 480px;
+    margin: 0 auto 18px;
+    background: #fffbeb;
+    border: 2px solid #fbbf24;
+    border-radius: 16px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .daily-card .label {
+    font-size: 14px; color: #92400e;
+    font-weight: bold; margin-bottom: 6px;
+  }
+  .daily-card .count {
+    font-size: 28px; font-weight: bold; color: #b45309;
+  }
+  .daily-card .count .target {
+    color: #92400e; font-size: 22px;
+  }
+  .daily-bar {
+    height: 10px; background: #fed7aa;
+    border-radius: 5px; overflow: hidden; margin-top: 10px;
+  }
+  .daily-bar .fill {
+    height: 100%; background: #f59e0b; transition: width 0.3s;
+  }
+  .daily-card.done {
+    background: #d1fae5; border-color: #059669;
+  }
+  .daily-card.done .label,
+  .daily-card.done .count,
+  .daily-card.done .count .target { color: #047857; }
+  .daily-card.done .daily-bar .fill { background: #10b981; }
+
+  .review-btn {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 24px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 22px 24px;
+    border-radius: 18px;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 5px 0 #4338ca;
+  }
+  .review-btn:active { transform: translateY(2px); box-shadow: 0 3px 0 #4338ca; }
+  .review-btn:disabled {
+    background: #cbd5e1; box-shadow: 0 5px 0 #94a3b8;
+    cursor: not-allowed; opacity: 0.7;
+  }
+  .review-btn small {
+    display: block; font-size: 14px; font-weight: normal;
+    margin-top: 4px; opacity: 0.9;
+  }
+
+  /* Bonus skill row (under Start button) */
+  .bonus-divider {
+    text-align: center;
+    color: #92400e;
+    font-size: 14px;
+    margin: 4px 0 10px;
+    font-weight: bold;
+  }
+  .bonus-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+  }
+  .bonus-btn {
+    background: #fef3c7;
+    border: 2px solid #fbbf24;
+    color: #92400e;
+    padding: 14px 4px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 3px 0 #d97706;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .bonus-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #d97706; }
+  .bonus-btn .icon { display: block; font-size: 26px; margin-bottom: 4px; }
+  .bonus-stars {
+    text-align: center;
+    margin: 0 auto 16px;
+    font-size: 16px;
+    color: #b45309;
+    font-weight: bold;
+  }
+
+  /* Review flashcard page */
+  .review-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    text-align: center;
+    border: 2px solid #c7d2fe;
+  }
+  .review-topic-tag {
+    display: inline-block;
+    background: #eef2ff; color: #4338ca;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 14px; font-weight: bold;
+    margin-bottom: 18px;
+  }
+
+  /* Home — topic grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .lesson-card {
+    background: white;
+    border: 3px solid #f59e0b;
+    border-radius: 16px;
+    padding: 22px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 0 #d97706;
+    user-select: none;
+  }
+  .lesson-card:active { transform: translateY(2px); box-shadow: 0 2px 0 #d97706; }
+  .lesson-card .icon { font-size: 44px; display: block; margin-bottom: 8px; }
+  .lesson-card .zh { font-size: 22px; font-weight: bold; color: #b45309; }
+  .lesson-card .en { font-size: 14px; color: #78716c; margin-top: 4px; }
+  .lesson-card .progress {
+    margin-top: 10px; font-size: 12px;
+    color: #059669; font-weight: bold;
+  }
+  .lesson-card.done {
+    background: #d1fae5; border-color: #059669;
+    box-shadow: 0 4px 0 #047857;
+  }
+
+  .skill-overview {
+    margin-top: 28px;
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #92400e;
+  }
+  .skill-overview h3 {
+    font-size: 16px; margin-bottom: 8px; color: #b45309;
+  }
+  .skill-overview ul { list-style: none; font-size: 14px; line-height: 1.7; }
+  .skill-overview li::before { content: "• "; color: #d97706; font-weight: bold; }
+
+  /* Lesson page */
+  .lesson-page {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    text-align: center;
+    border: 2px solid #fde68a;
+  }
+  .top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    background: #6b7280; color: white; border: none;
+    padding: 10px 18px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; font-family: inherit;
+  }
+  .step-label {
+    font-size: 16px; color: #6b7280; font-weight: bold;
+  }
+  .step-label .skill-icon { font-size: 22px; }
+  .progress-bar {
+    width: 100%; height: 8px;
+    background: #fed7aa; border-radius: 4px;
+    overflow: hidden; margin-bottom: 24px;
+  }
+  .progress-fill {
+    height: 100%; background: #f59e0b; transition: width 0.3s;
+  }
+
+  .skill-banner {
+    font-size: 22px; color: #b45309;
+    margin-bottom: 6px; font-weight: bold;
+  }
+  .skill-prompt { font-size: 18px; color: #6b7280; margin-bottom: 24px; }
+
+  .english-word {
+    font-size: 56px; font-weight: bold;
+    color: #b45309; line-height: 1.1;
+    margin-bottom: 12px; word-wrap: break-word;
+  }
+  .pinyin-hint {
+    font-size: 20px; color: #6b7280;
+    font-style: italic; margin-bottom: 12px;
+  }
+  .chinese-meaning {
+    font-size: 32px; color: #1f2937;
+    margin-bottom: 24px; font-weight: bold;
+  }
+
+  .speak-btn {
+    background: #10b981; color: white; border: none;
+    padding: 22px 32px; border-radius: 16px;
+    font-size: 22px; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 0 #047857; margin: 6px 4px;
+    min-width: 180px;
+  }
+  .speak-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #047857; }
+  .speak-btn.slow { background: #3b82f6; box-shadow: 0 4px 0 #1d4ed8; }
+  .speak-btn.slow:active { box-shadow: 0 2px 0 #1d4ed8; }
+
+  .big-listen-btn {
+    background: #10b981; color: white; border: none;
+    padding: 32px 48px; border-radius: 24px;
+    font-size: 28px; cursor: pointer; font-family: inherit;
+    box-shadow: 0 6px 0 #047857;
+    margin: 16px 0 24px;
+  }
+  .big-listen-btn:active { transform: translateY(2px); box-shadow: 0 4px 0 #047857; }
+
+  /* Mic */
+  .mic-btn {
+    background: #ef4444; color: white; border: none;
+    padding: 26px 36px; border-radius: 20px;
+    font-size: 24px; font-weight: bold; cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 6px 0 #b91c1c;
+    margin: 20px 0 12px; min-width: 240px;
+  }
+  .mic-btn:active { transform: translateY(2px); box-shadow: 0 4px 0 #b91c1c; }
+  .mic-btn.listening {
+    background: #dc2626;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+  .heard-text {
+    font-size: 18px; color: #6b7280;
+    margin: 12px 0; min-height: 28px;
+  }
+  .heard-text strong { color: #1f2937; }
+
+  /* Choice buttons (Listening / Reading / Understanding) */
+  .choice-list {
+    display: flex; flex-direction: column;
+    gap: 12px; margin-top: 12px;
+  }
+  .choice-btn {
+    background: white; border: 3px solid #f59e0b; color: #1f2937;
+    padding: 18px; border-radius: 12px;
+    font-size: 22px; cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 0 #d97706;
+  }
+  .choice-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d97706; }
+  .choice-btn.correct {
+    background: #d1fae5; border-color: #059669;
+    box-shadow: 0 4px 0 #047857;
+  }
+  .choice-btn.wrong {
+    background: #fee2e2; border-color: #dc2626;
+    box-shadow: 0 4px 0 #b91c1c;
+  }
+  .choice-btn:disabled { cursor: not-allowed; }
+
+  /* Spelling */
+  .spell-slots {
+    display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 6px;
+    margin: 16px 0 12px; min-height: 56px;
+  }
+  .spell-slot {
+    width: 44px; height: 56px;
+    border-bottom: 4px solid #b45309;
+    font-size: 32px; font-weight: bold;
+    color: #1f2937;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .spell-slot.space {
+    border-bottom-color: transparent;
+    width: 16px;
+  }
+  .letter-pool {
+    display: flex; flex-wrap: wrap;
+    justify-content: center; gap: 8px;
+    margin: 16px 0;
+  }
+  .letter-tile {
+    width: 52px; height: 56px;
+    background: #fef3c7; border: 2px solid #f59e0b;
+    color: #b45309; font-size: 26px; font-weight: bold;
+    border-radius: 10px; cursor: pointer; font-family: inherit;
+    box-shadow: 0 3px 0 #d97706;
+  }
+  .letter-tile:active { transform: translateY(2px); box-shadow: 0 1px 0 #d97706; }
+  .letter-tile.used {
+    visibility: hidden;
+  }
+  .spell-controls {
+    display: flex; gap: 10px;
+    justify-content: center; margin-top: 8px;
+  }
+  .control-btn {
+    background: #6b7280; color: white; border: none;
+    padding: 12px 18px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; font-family: inherit;
+  }
+
+  /* Skip */
+  .skip-btn {
+    background: #9ca3af; color: white; border: none;
+    padding: 12px 22px; border-radius: 10px;
+    font-size: 16px; cursor: pointer; font-family: inherit;
+    margin-top: 16px;
+  }
+
+  .feedback {
+    font-size: 26px; font-weight: bold;
+    margin-top: 18px; min-height: 36px;
+  }
+  .feedback.good { color: #059669; }
+  .feedback.bad { color: #dc2626; }
+
+  /* Done */
+  .complete-screen { text-align: center; padding: 40px 20px; }
+  .complete-screen .emoji { font-size: 80px; }
+  .complete-screen h2 {
+    font-size: 32px; color: #b45309; margin: 16px 0 8px;
+  }
+  .complete-screen p {
+    font-size: 20px; color: #6b7280; margin-bottom: 28px;
+  }
+
+  .nav-btn {
+    background: #f59e0b; color: white; border: none;
+    padding: 18px 28px; border-radius: 12px;
+    font-size: 20px; font-weight: bold; cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 0 #d97706;
+    margin: 6px;
+  }
+  .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d97706; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 26px; }
+    .english-word { font-size: 42px; }
+    .chinese-meaning { font-size: 26px; }
+    .letter-tile { width: 44px; height: 50px; font-size: 22px; }
+    .spell-slot { width: 36px; height: 50px; font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+// =====================
+// 课程数据 / Lesson data (organized by topic)
+// =====================
+const LESSONS = [
+  {
+    id: 'alphabet', icon: '🔤', zh: '字母', en: 'Alphabet',
+    items: [
+      { en: 'A', zh: '字母 A', hint: 'ay' },
+      { en: 'B', zh: '字母 B', hint: 'bee' },
+      { en: 'C', zh: '字母 C', hint: 'see' },
+      { en: 'D', zh: '字母 D', hint: 'dee' },
+      { en: 'E', zh: '字母 E', hint: 'ee' },
+      { en: 'F', zh: '字母 F', hint: 'eff' },
+      { en: 'G', zh: '字母 G', hint: 'jee' },
+      { en: 'H', zh: '字母 H', hint: 'aitch' },
+      { en: 'I', zh: '字母 I', hint: 'eye' },
+      { en: 'J', zh: '字母 J', hint: 'jay' },
+      { en: 'K', zh: '字母 K', hint: 'kay' },
+      { en: 'L', zh: '字母 L', hint: 'el' },
+      { en: 'M', zh: '字母 M', hint: 'em' },
+      { en: 'N', zh: '字母 N', hint: 'en' },
+      { en: 'O', zh: '字母 O', hint: 'oh' },
+      { en: 'P', zh: '字母 P', hint: 'pee' },
+      { en: 'Q', zh: '字母 Q', hint: 'cue' },
+      { en: 'R', zh: '字母 R', hint: 'are' },
+      { en: 'S', zh: '字母 S', hint: 'ess' },
+      { en: 'T', zh: '字母 T', hint: 'tee' },
+      { en: 'U', zh: '字母 U', hint: 'you' },
+      { en: 'V', zh: '字母 V', hint: 'vee' },
+      { en: 'W', zh: '字母 W', hint: 'double-you' },
+      { en: 'X', zh: '字母 X', hint: 'eks' },
+      { en: 'Y', zh: '字母 Y', hint: 'why' },
+      { en: 'Z', zh: '字母 Z', hint: 'zee' }
+    ]
+  },
+  {
+    id: 'numbers', icon: '🔢', zh: '数字', en: 'Numbers',
+    items: [
+      { en: 'one', zh: '一 (1)', hint: 'wun' },
+      { en: 'two', zh: '二 (2)', hint: 'too' },
+      { en: 'three', zh: '三 (3)', hint: 'three' },
+      { en: 'four', zh: '四 (4)', hint: 'for' },
+      { en: 'five', zh: '五 (5)', hint: 'fyve' },
+      { en: 'six', zh: '六 (6)', hint: 'siks' },
+      { en: 'seven', zh: '七 (7)', hint: 'seh-vun' },
+      { en: 'eight', zh: '八 (8)', hint: 'ate' },
+      { en: 'nine', zh: '九 (9)', hint: 'nyne' },
+      { en: 'ten', zh: '十 (10)', hint: 'ten' },
+      { en: 'eleven', zh: '十一 (11)', hint: 'ee-leh-vun' },
+      { en: 'twelve', zh: '十二 (12)', hint: 'twelv' },
+      { en: 'twenty', zh: '二十 (20)', hint: 'twen-tee' },
+      { en: 'thirty', zh: '三十 (30)', hint: 'thur-tee' },
+      { en: 'fifty', zh: '五十 (50)', hint: 'fif-tee' }
+    ]
+  },
+  {
+    id: 'greetings', icon: '👋', zh: '问候语', en: 'Greetings',
+    items: [
+      { en: 'Hello', zh: '你好', hint: 'heh-loh' },
+      { en: 'Hi', zh: '嗨', hint: 'hi' },
+      { en: 'Good morning', zh: '早上好', hint: 'good mor-ning' },
+      { en: 'Good afternoon', zh: '下午好', hint: 'good af-ter-noon' },
+      { en: 'Good evening', zh: '晚上好', hint: 'good eve-ning' },
+      { en: 'Good night', zh: '晚安', hint: 'good nyte' },
+      { en: 'Goodbye', zh: '再见', hint: 'good-bye' },
+      { en: 'See you later', zh: '回头见', hint: 'see you lay-ter' },
+      { en: 'How are you?', zh: '你好吗?', hint: 'how are you' },
+      { en: 'I am fine', zh: '我很好', hint: 'eye am fyne' },
+      { en: 'Thank you', zh: '谢谢', hint: 'thank you' },
+      { en: 'You are welcome', zh: '不客气', hint: 'you are wel-come' },
+      { en: 'Please', zh: '请', hint: 'pleez' },
+      { en: 'Sorry', zh: '对不起', hint: 'sor-ree' },
+      { en: 'Excuse me', zh: '打扰一下', hint: 'eks-cuse me' }
+    ]
+  },
+  {
+    id: 'family', icon: '👨‍👩‍👧', zh: '家人', en: 'Family',
+    items: [
+      { en: 'father', zh: '爸爸', hint: 'fah-ther' },
+      { en: 'mother', zh: '妈妈', hint: 'muh-ther' },
+      { en: 'son', zh: '儿子', hint: 'sun' },
+      { en: 'daughter', zh: '女儿', hint: 'daw-ter' },
+      { en: 'brother', zh: '兄弟', hint: 'bruh-ther' },
+      { en: 'sister', zh: '姐妹', hint: 'sis-ter' },
+      { en: 'grandfather', zh: '爷爷', hint: 'grand-fah-ther' },
+      { en: 'grandmother', zh: '奶奶', hint: 'grand-muh-ther' },
+      { en: 'husband', zh: '丈夫', hint: 'huz-bund' },
+      { en: 'wife', zh: '妻子', hint: 'wyfe' },
+      { en: 'family', zh: '家人', hint: 'fam-i-lee' },
+      { en: 'friend', zh: '朋友', hint: 'frend' }
+    ]
+  },
+  {
+    id: 'colors', icon: '🎨', zh: '颜色', en: 'Colors',
+    items: [
+      { en: 'red', zh: '红色', hint: 'red' },
+      { en: 'orange', zh: '橙色', hint: 'or-anj' },
+      { en: 'yellow', zh: '黄色', hint: 'yel-oh' },
+      { en: 'green', zh: '绿色', hint: 'green' },
+      { en: 'blue', zh: '蓝色', hint: 'bloo' },
+      { en: 'purple', zh: '紫色', hint: 'pur-pl' },
+      { en: 'pink', zh: '粉色', hint: 'pink' },
+      { en: 'black', zh: '黑色', hint: 'blak' },
+      { en: 'white', zh: '白色', hint: 'wyte' },
+      { en: 'gray', zh: '灰色', hint: 'gray' },
+      { en: 'brown', zh: '棕色', hint: 'brown' }
+    ]
+  },
+  {
+    id: 'food', icon: '🍚', zh: '食物', en: 'Food',
+    items: [
+      { en: 'rice', zh: '米饭', hint: 'ryce' },
+      { en: 'noodles', zh: '面条', hint: 'noo-dls' },
+      { en: 'bread', zh: '面包', hint: 'bred' },
+      { en: 'water', zh: '水', hint: 'wah-ter' },
+      { en: 'tea', zh: '茶', hint: 'tee' },
+      { en: 'coffee', zh: '咖啡', hint: 'kaw-fee' },
+      { en: 'meat', zh: '肉', hint: 'meet' },
+      { en: 'fish', zh: '鱼', hint: 'fish' },
+      { en: 'chicken', zh: '鸡肉', hint: 'chik-en' },
+      { en: 'fruit', zh: '水果', hint: 'froot' },
+      { en: 'apple', zh: '苹果', hint: 'ap-l' },
+      { en: 'egg', zh: '鸡蛋', hint: 'eg' },
+      { en: 'milk', zh: '牛奶', hint: 'milk' }
+    ]
+  },
+  {
+    id: 'time', icon: '⏰', zh: '时间', en: 'Time & Days',
+    items: [
+      { en: 'today', zh: '今天', hint: 'too-day' },
+      { en: 'tomorrow', zh: '明天', hint: 'too-mor-oh' },
+      { en: 'yesterday', zh: '昨天', hint: 'yes-ter-day' },
+      { en: 'morning', zh: '早上', hint: 'mor-ning' },
+      { en: 'afternoon', zh: '下午', hint: 'af-ter-noon' },
+      { en: 'evening', zh: '晚上', hint: 'eev-ning' },
+      { en: 'Monday', zh: '星期一', hint: 'mun-day' },
+      { en: 'Tuesday', zh: '星期二', hint: 'tooz-day' },
+      { en: 'Wednesday', zh: '星期三', hint: 'wenz-day' },
+      { en: 'Thursday', zh: '星期四', hint: 'thurz-day' },
+      { en: 'Friday', zh: '星期五', hint: 'fry-day' },
+      { en: 'Saturday', zh: '星期六', hint: 'sat-er-day' },
+      { en: 'Sunday', zh: '星期日', hint: 'sun-day' }
+    ]
+  },
+  {
+    id: 'phrases', icon: '💬', zh: '常用短语', en: 'Daily Phrases',
+    items: [
+      { en: 'Yes', zh: '是', hint: 'yes' },
+      { en: 'No', zh: '不', hint: 'noh' },
+      { en: 'My name is', zh: '我的名字是', hint: 'my name iz' },
+      { en: 'Nice to meet you', zh: '很高兴认识你', hint: 'nyce to meet you' },
+      { en: 'I do not understand', zh: '我不明白', hint: 'eye do not un-der-stand' },
+      { en: 'Please speak slowly', zh: '请说慢一点', hint: 'pleez speek sloh-lee' },
+      { en: 'How much?', zh: '多少钱?', hint: 'how much' },
+      { en: 'I need help', zh: '我需要帮助', hint: 'eye need help' },
+      { en: 'I am from China', zh: '我来自中国', hint: 'eye am from chy-na' },
+      { en: 'I love you', zh: '我爱你', hint: 'eye luv you' },
+      { en: 'Have a good day', zh: '祝你有美好的一天', hint: 'hav a good day' }
+    ]
+  }
+];
+
+// =====================
+// 5 技能 / The 5 skills
+// =====================
+const SKILL_ORDER = ['listening', 'reading', 'spelling', 'speaking', 'understanding'];
+const SKILL_INFO = {
+  listening:    { icon: '🎧', zh: '听力', en: 'Listening',    prompt: '听音, 选出正确的单词' },
+  reading:      { icon: '👁️', zh: '阅读', en: 'Reading',      prompt: '看英语, 选出中文意思' },
+  spelling:     { icon: '✏️', zh: '拼写', en: 'Spelling',     prompt: '拼出这个英语单词' },
+  speaking:     { icon: '🗣️', zh: '口语', en: 'Speaking',     prompt: '大声说出这个单词' },
+  understanding:{ icon: '🧠', zh: '理解', en: 'Understanding',prompt: '看中文, 选出正确的英语' }
+};
+
+// =====================
+// 工具函数 / Helpers
+// =====================
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function normalize(s) {
+  return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').trim().replace(/\s+/g, ' ');
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const dp = Array.from({ length: m + 1 }, () => Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+const LETTER_NAMES = {
+  a: ['a','ay','eh'], b: ['b','be','bee'], c: ['c','see','sea'], d: ['d','de','dee'],
+  e: ['e','ee'], f: ['f','ef','eff'], g: ['g','gee','jee'], h: ['h','aitch'],
+  i: ['i','eye','aye'], j: ['j','jay'], k: ['k','kay'], l: ['l','el','ell'],
+  m: ['m','em'], n: ['n','en'], o: ['o','oh','owe'], p: ['p','pee'],
+  q: ['q','cue','queue'], r: ['r','are','arr'], s: ['s','es','ess'],
+  t: ['t','tee','tea'], u: ['u','you','yoo'], v: ['v','vee'],
+  w: ['w','double u','double you'], x: ['x','ex','eks'],
+  y: ['y','why','wye'], z: ['z','zee','zed']
+};
+
+function matchesTarget(heard, target) {
+  const h = normalize(heard), t = normalize(target);
+  if (!h || !t) return false;
+  if (t.length === 1 && LETTER_NAMES[t]) {
+    return LETTER_NAMES[t].some(n => h === n || h.split(' ').includes(n));
+  }
+  if (h === t) return true;
+  if (h.includes(t) || t.includes(h)) return true;
+  const tw = t.split(' '), hw = h.split(' ');
+  if (tw.every(w => hw.includes(w))) return true;
+  const threshold = t.length <= 3 ? 1 : t.length <= 7 ? 2 : 3;
+  return levenshtein(h, t) <= threshold;
+}
+
+// =====================
+// 进度 / Progress
+// =====================
+const STORAGE_KEY = 'english_app_progress_v2';
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveProgress(p) { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+let progress = loadProgress();
+
+const DAILY_GOAL = 9;
+function todayString() { return new Date().toISOString().slice(0, 10); }
+function getDailyCount() {
+  if (progress.today && progress.today.date === todayString()) return progress.today.count;
+  return 0;
+}
+function incDailyCount() {
+  const t = todayString();
+  if (!progress.today || progress.today.date !== t) progress.today = { date: t, count: 0 };
+  progress.today.count++;
+  saveProgress(progress);
+}
+function getReviewItems() {
+  const items = [];
+  for (const lesson of LESSONS) {
+    const p = progress[lesson.id];
+    if (p && p.attempts > 0) {
+      lesson.items.forEach(i => items.push({ ...i, lessonZh: lesson.zh, lessonEn: lesson.en, lessonIcon: lesson.icon }));
+    }
+  }
+  return items;
+}
+
+// =====================
+// 发音 / Speech
+// =====================
+function speak(text, slow = false) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = slow ? 0.55 : 0.85;
+  const voices = window.speechSynthesis.getVoices();
+  const en = voices.find(v => v.lang.startsWith('en'));
+  if (en) u.voice = en;
+  window.speechSynthesis.speak(u);
+}
+if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => {};
+
+// =====================
+// 麦克风 / Speech Recognition
+// =====================
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SUPPORTS_MIC = !!SpeechRecognition;
+let recognition = null, isListening = false;
+if (SUPPORTS_MIC) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 5;
+}
+
+function startListening(target) {
+  if (!SUPPORTS_MIC || isListening) return;
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  isListening = true;
+  const btn = document.getElementById('mic-btn');
+  const heard = document.getElementById('heard-text');
+  const fb = document.getElementById('feedback');
+  if (btn) { btn.classList.add('listening'); btn.textContent = '🎤 听你说...'; }
+  if (heard) heard.innerHTML = '';
+  if (fb) { fb.textContent = ''; fb.className = 'feedback'; }
+
+  let resolved = false;
+  recognition.onresult = (e) => {
+    resolved = true;
+    const r = e.results[0];
+    let best = r[0].transcript, matched = false;
+    for (let i = 0; i < r.length; i++) {
+      if (matchesTarget(r[i].transcript, target)) { best = r[i].transcript; matched = true; break; }
+    }
+    handleSpeech(best, matched, target);
+  };
+  recognition.onerror = (e) => {
+    resolved = true; isListening = false;
+    if (btn) { btn.classList.remove('listening'); btn.textContent = '🎤 我来说'; }
+    if (fb) {
+      fb.textContent = e.error === 'not-allowed'
+        ? '需要麦克风权限 / Microphone needed'
+        : '没听到, 再试一次';
+      fb.className = 'feedback bad';
+    }
+  };
+  recognition.onend = () => {
+    isListening = false;
+    if (btn && !resolved) { btn.classList.remove('listening'); btn.textContent = '🎤 我来说'; }
+  };
+  try { recognition.start(); } catch {}
+}
+
+function handleSpeech(transcript, matched, target) {
+  const btn = document.getElementById('mic-btn');
+  const heard = document.getElementById('heard-text');
+  const fb = document.getElementById('feedback');
+  if (btn) { btn.classList.remove('listening'); btn.textContent = '🎤 我来说'; }
+  if (heard) heard.innerHTML = '听到 / Heard: <strong>' + transcript + '</strong>';
+  if (matched) {
+    if (fb) { fb.textContent = '✓ 太棒了!'; fb.className = 'feedback good'; }
+    score++;
+    setTimeout(() => { if (mode === 'practice') advanceStep(); }, 1100);
+  } else {
+    if (fb) {
+      fb.innerHTML = '✗ 再试一次<br><span style="font-size:18px;color:#6b7280;">应该是: <strong style="color:#b45309;">' + target + '</strong></span>';
+      fb.className = 'feedback bad';
+    }
+  }
+}
+function stopListening() {
+  if (recognition && isListening) { try { recognition.stop(); } catch {} }
+  isListening = false;
+}
+
+// =====================
+// 状态 / State
+// =====================
+let mode = 'home'; // home | practice | done | review
+let currentLesson = null;
+let currentStep = 0;
+let lessonItems = {}; // skill -> item
+let score = 0;
+let answered = false;
+// Review state
+let reviewItems = [];
+let reviewIndex = 0;
+// Bonus state
+let bonusSkill = null;
+let bonusLesson = null;
+let bonusItem = null;
+// Spelling state
+let spellTarget = '';
+let spellTiles = []; // [{ch, used}]
+let spellAnswerIdx = []; // tile indexes in tap order
+
+// =====================
+// 题目选择 / Item picking
+// =====================
+function buildLessonItems(lesson) {
+  const used = new Set();
+  const recentList = (progress[lesson.id] && progress[lesson.id].recentItems) || [];
+  const recent = new Set(recentList);
+
+  const fresh = (filterFn) => {
+    const ok = (i) => !used.has(i.en) && (filterFn ? filterFn(i) : true);
+    // First choice: passes filter, not used this session, not in recent (= not seen lately)
+    let pool = lesson.items.filter(i => ok(i) && !recent.has(i.en));
+    // Fallback 1: drop the recency requirement
+    if (pool.length === 0) pool = lesson.items.filter(ok);
+    // Fallback 2: drop the session-uniqueness too
+    if (pool.length === 0) pool = filterFn ? lesson.items.filter(filterFn) : lesson.items;
+    if (pool.length === 0) pool = lesson.items;
+    const it = pick(pool);
+    used.add(it.en);
+    return it;
+  };
+  const spellOk = (i) => !i.en.includes(' ') && i.en.length >= 1 && i.en.length <= 12;
+  return {
+    listening:     fresh(),
+    reading:       fresh(),
+    spelling:      fresh(spellOk),
+    speaking:      fresh(),
+    understanding: fresh()
+  };
+}
+
+function recordRecentItems(lessonId, items) {
+  const p = progress[lessonId] || { attempts: 0, bestScore: 0 };
+  const recent = p.recentItems ? [...p.recentItems] : [];
+  for (const it of items) {
+    const idx = recent.indexOf(it.en);
+    if (idx !== -1) recent.splice(idx, 1);
+    recent.push(it.en);
+  }
+  // Cap recent memory at ~60% of the topic's vocab (so there's always fresh stuff to pick)
+  const lesson = LESSONS.find(l => l.id === lessonId);
+  const cap = Math.max(5, Math.floor((lesson ? lesson.items.length : 10) * 0.6));
+  while (recent.length > cap) recent.shift();
+  p.recentItems = recent;
+  progress[lessonId] = p;
+  saveProgress(progress);
+}
+
+function pickDistractors(item, lesson, n) {
+  const others = lesson.items.filter(i => i.en !== item.en);
+  return shuffle(others).slice(0, n);
+}
+
+// =====================
+// 渲染 / Render
+// =====================
+const app = document.getElementById('app');
+function render() {
+  if (mode === 'home') return renderHome();
+  if (mode === 'practice') return renderPractice();
+  if (mode === 'done') return renderDone();
+  if (mode === 'review') return renderReview();
+  if (mode === 'bonus') return renderBonus();
+  if (mode === 'bonus-done') return renderBonusDone();
+}
+
+function renderHome() {
+  const cards = LESSONS.map(l => {
+    const p = progress[l.id] || {};
+    const completedTag = p.bestScore >= 4 ? '<div class="progress">✓ 已完成 ' + p.bestScore + '/5</div>'
+      : (p.attempts ? '<div class="progress" style="color:#92400e;">最高 ' + (p.bestScore || 0) + '/5</div>' : '');
+    const cls = p.bestScore >= 4 ? 'lesson-card done' : 'lesson-card';
+    return `
+      <div class="${cls}" onclick="startLesson('${l.id}')">
+        <span class="icon">${l.icon}</span>
+        <div class="zh">${l.zh}</div>
+        <div class="en">${l.en}</div>
+        ${completedTag}
+      </div>`;
+  }).join('');
+
+  // Find the next lesson to do (first one not yet at full score, else first one)
+  const nextLesson = LESSONS.find(l => !(progress[l.id] && progress[l.id].bestScore >= 5)) || LESSONS[0];
+
+  const dailyCount = getDailyCount();
+  const dailyDone = dailyCount >= DAILY_GOAL;
+  const dailyPercent = Math.min(100, (dailyCount / DAILY_GOAL) * 100);
+  const dailyHtml = `
+    <div class="daily-card ${dailyDone ? 'done' : ''}">
+      <div class="label">${dailyDone ? '🎉 今天的目标完成了!' : '今天的目标 / Daily Goal'}</div>
+      <div class="count">${dailyCount} <span class="target">/ ${DAILY_GOAL} 课</span></div>
+      <div class="daily-bar"><div class="fill" style="width:${dailyPercent}%"></div></div>
+    </div>
+  `;
+
+  const reviewCount = getReviewItems().length;
+  const reviewDisabled = reviewCount === 0;
+  const reviewHtml = `
+    <button class="review-btn" onclick="startReview()" ${reviewDisabled ? 'disabled' : ''}>
+      📚 复习学过的单词
+      <small>${reviewDisabled ? '先学一节课就可以复习啦' : 'Review — ' + reviewCount + ' 个单词'}</small>
+    </button>
+  `;
+
+  app.innerHTML = `
+    <header>
+      <h1>爸爸学英语<small>Learn English Step by Step</small></h1>
+    </header>
+
+    ${dailyHtml}
+
+    <button class="start-btn" onclick="startLesson('${nextLesson.id}')">
+      ▶ 开始学习
+      <small>Start Lesson — ${nextLesson.icon} ${nextLesson.zh} ${nextLesson.en}</small>
+    </button>
+
+    <div class="bonus-divider">⭐ 奖励题 / Bonus questions ${(progress.bonusStars || 0) > 0 ? '— 已得 ⭐ ' + progress.bonusStars : ''}</div>
+    <div class="bonus-row">
+      ${SKILL_ORDER.map(s => `
+        <button class="bonus-btn" onclick="startBonus('${s}')">
+          <span class="icon">${SKILL_INFO[s].icon}</span>
+          ${SKILL_INFO[s].zh}
+        </button>
+      `).join('')}
+    </div>
+
+    ${reviewHtml}
+
+    <div class="home-divider">— 或选择一个主题 / Or pick a topic —</div>
+
+    <div class="grid">${cards}</div>
+
+    <div class="skill-overview">
+      <h3>每节课练 5 项 / 5 skills per lesson:</h3>
+      <ul>
+        <li>🎧 听力 Listening — 听音选词</li>
+        <li>👁️ 阅读 Reading — 看词选意思</li>
+        <li>✏️ 拼写 Spelling — 拼出单词</li>
+        <li>🗣️ 口语 Speaking — 说出单词</li>
+        <li>🧠 理解 Understanding — 看中文选英语</li>
+      </ul>
+    </div>
+  `;
+}
+
+function renderPractice() {
+  const skill = SKILL_ORDER[currentStep];
+  const item = lessonItems[skill];
+  const info = SKILL_INFO[skill];
+  const total = SKILL_ORDER.length;
+  const percent = ((currentStep) / total) * 100;
+  answered = false;
+
+  const header = `
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 返回</button>
+      <div class="step-label">
+        <span class="skill-icon">${info.icon}</span>
+        ${info.zh} ${currentStep + 1} / ${total}
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+    <div class="skill-banner">${info.icon} ${info.zh} ${info.en}</div>
+    <div class="skill-prompt">${info.prompt}</div>
+  `;
+
+  let body = '';
+  if (skill === 'listening')      body = renderListeningBody(item, currentLesson);
+  else if (skill === 'reading')   body = renderReadingBody(item, currentLesson);
+  else if (skill === 'spelling')  body = renderSpellingBody(item);
+  else if (skill === 'speaking')  body = renderSpeakingBody(item);
+  else if (skill === 'understanding') body = renderUnderstandingBody(item, currentLesson);
+
+  app.innerHTML = `<div class="lesson-page">${header}${body}<div class="feedback" id="feedback"></div></div>`;
+
+  // Auto-actions per skill
+  if (skill === 'listening') setTimeout(() => speak(item.en, false), 400);
+  if (skill === 'reading' || skill === 'speaking') setTimeout(() => speak(item.en, false), 400);
+  if (skill === 'spelling') {
+    initSpellingState(item);
+    renderSpellingTiles();
+    setTimeout(() => speak(item.en, false), 400);
+  }
+}
+
+function renderListeningBody(item, lesson) {
+  const distractors = pickDistractors(item, lesson, 3);
+  const options = shuffle([item, ...distractors]);
+  const safeAns = item.en.replace(/'/g, "\\'");
+  const opts = options.map(o => {
+    const safe = o.en.replace(/'/g, "\\'");
+    const correct = o.en === item.en ? 'true' : 'false';
+    return `<button class="choice-btn" data-correct="${correct}" onclick="answerChoice(this, ${correct}, '${safeAns}')">${o.en}</button>`;
+  }).join('');
+  return `
+    <button class="big-listen-btn" onclick="speak('${safeAns}', false)">🔊 听一听</button><br>
+    <button class="speak-btn slow" onclick="speak('${safeAns}', true)">🐢 慢速</button>
+    <div class="choice-list" style="margin-top:24px;">${opts}</div>
+  `;
+}
+
+function renderReadingBody(item, lesson) {
+  const distractors = pickDistractors(item, lesson, 3);
+  const options = shuffle([item, ...distractors]);
+  const safeAns = item.en.replace(/'/g, "\\'");
+  const opts = options.map(o => {
+    const correct = o.en === item.en ? 'true' : 'false';
+    return `<button class="choice-btn" data-correct="${correct}" onclick="answerChoice(this, ${correct}, '${safeAns}')">${o.zh}</button>`;
+  }).join('');
+  return `
+    <div class="english-word">${item.en}</div>
+    <div class="pinyin-hint">读法: ${item.hint}</div>
+    <button class="speak-btn" onclick="speak('${safeAns}', false)">🔊 听</button>
+    <div class="choice-list" style="margin-top:24px;">${opts}</div>
+  `;
+}
+
+function renderUnderstandingBody(item, lesson) {
+  const distractors = pickDistractors(item, lesson, 3);
+  const options = shuffle([item, ...distractors]);
+  const safeAns = item.en.replace(/'/g, "\\'");
+  const opts = options.map(o => {
+    const safe = o.en.replace(/'/g, "\\'");
+    const correct = o.en === item.en ? 'true' : 'false';
+    return `<button class="choice-btn" data-correct="${correct}" onclick="answerChoice(this, ${correct}, '${safeAns}')">${o.en}</button>`;
+  }).join('');
+  return `
+    <div class="chinese-meaning">${item.zh}</div>
+    <p style="font-size:18px;color:#6b7280;margin-bottom:12px;">用英语怎么说?</p>
+    <div class="choice-list">${opts}</div>
+  `;
+}
+
+function renderSpeakingBody(item) {
+  const safe = item.en.replace(/'/g, "\\'");
+  const micUI = SUPPORTS_MIC ? `
+    <button id="mic-btn" class="mic-btn" onclick="startListening('${safe}')">🎤 我来说</button>
+    <div id="heard-text" class="heard-text"></div>
+    <button class="skip-btn" onclick="advanceStep()">跳过 Skip →</button>
+  ` : `
+    <p style="font-size:16px;color:#dc2626;margin:12px 0;">浏览器不支持麦克风<br>(Use Chrome / Safari)</p>
+    <button class="nav-btn" onclick="advanceStep()">下一个 →</button>
+  `;
+  return `
+    <div class="english-word">${item.en}</div>
+    <div class="pinyin-hint">读法: ${item.hint}</div>
+    <div class="chinese-meaning" style="font-size:24px;">${item.zh}</div>
+    <button class="speak-btn" onclick="speak('${safe}', false)">🔊 听</button>
+    <button class="speak-btn slow" onclick="speak('${safe}', true)">🐢 慢速</button>
+    ${micUI}
+  `;
+}
+
+function renderSpellingBody(item) {
+  const safe = item.en.replace(/'/g, "\\'");
+  return `
+    <div class="chinese-meaning">${item.zh}</div>
+    <button class="speak-btn" onclick="speak('${safe}', false)">🔊 听一听</button>
+    <button class="speak-btn slow" onclick="speak('${safe}', true)">🐢 慢速</button>
+
+    <div class="spell-slots" id="spell-slots"></div>
+    <div class="letter-pool" id="letter-pool"></div>
+    <div class="spell-controls">
+      <button class="control-btn" onclick="deleteLetter()">⌫ 删除</button>
+      <button class="control-btn" onclick="resetSpelling()">重置</button>
+    </div>
+    <button class="skip-btn" onclick="advanceStep()">跳过 Skip →</button>
+  `;
+}
+
+// =====================
+// Spelling logic
+// =====================
+function initSpellingState(item) {
+  spellTarget = item.en;
+  // Tiles = chars of target (preserve case but lowercase for matching). Skip spaces — we'll auto-place them.
+  const chars = spellTarget.split('').filter(c => c !== ' ');
+  spellTiles = shuffle(chars.map(c => ({ ch: c, used: false }))).map((t, idx) => ({ ...t, id: idx }));
+  spellAnswerIdx = [];
+}
+
+function renderSpellingTiles() {
+  const slots = document.getElementById('spell-slots');
+  const pool = document.getElementById('letter-pool');
+  if (!slots || !pool) return;
+
+  // Build slots: one per char in target (spaces are visual gaps)
+  const targetChars = spellTarget.split('');
+  let slotsHtml = '';
+  let answerIdx = 0;
+  for (let i = 0; i < targetChars.length; i++) {
+    if (targetChars[i] === ' ') {
+      slotsHtml += `<div class="spell-slot space"></div>`;
+    } else {
+      const tileIdx = spellAnswerIdx[answerIdx];
+      const filled = tileIdx !== undefined ? spellTiles[tileIdx].ch : '';
+      slotsHtml += `<div class="spell-slot">${filled}</div>`;
+      answerIdx++;
+    }
+  }
+  slots.innerHTML = slotsHtml;
+
+  pool.innerHTML = spellTiles.map((t, i) =>
+    `<button class="letter-tile ${t.used ? 'used' : ''}" onclick="tapLetter(${i})">${t.ch}</button>`
+  ).join('');
+}
+
+function tapLetter(idx) {
+  if (answered) return;
+  if (spellTiles[idx].used) return;
+  spellTiles[idx].used = true;
+  spellAnswerIdx.push(idx);
+  renderSpellingTiles();
+
+  // Check if complete
+  const expectedLen = spellTarget.replace(/ /g, '').length;
+  if (spellAnswerIdx.length === expectedLen) checkSpelling();
+}
+
+function deleteLetter() {
+  if (answered || spellAnswerIdx.length === 0) return;
+  const idx = spellAnswerIdx.pop();
+  spellTiles[idx].used = false;
+  renderSpellingTiles();
+}
+
+function resetSpelling() {
+  if (answered) return;
+  spellAnswerIdx = [];
+  spellTiles.forEach(t => t.used = false);
+  renderSpellingTiles();
+}
+
+function checkSpelling() {
+  const fb = document.getElementById('feedback');
+  const built = spellAnswerIdx.map(i => spellTiles[i].ch).join('');
+  const targetNoSpace = spellTarget.replace(/ /g, '');
+  const correct = built.toLowerCase() === targetNoSpace.toLowerCase();
+  answered = true;
+  if (correct) {
+    score++;
+    if (fb) { fb.textContent = '✓ 太棒了!'; fb.className = 'feedback good'; }
+    setTimeout(() => { if (mode === 'practice') advanceStep(); }, 1000);
+  } else {
+    if (fb) {
+      fb.innerHTML = '✗ 不对<br><span style="font-size:18px;color:#6b7280;">应该是: <strong style="color:#b45309;">' + spellTarget + '</strong></span>';
+      fb.className = 'feedback bad';
+    }
+    setTimeout(() => {
+      answered = false;
+      resetSpelling();
+      const fb2 = document.getElementById('feedback');
+      if (fb2) { fb2.textContent = ''; fb2.className = 'feedback'; }
+    }, 1800);
+  }
+}
+
+// =====================
+// Choice answering (Listening / Reading / Understanding)
+// =====================
+function answerChoice(btn, isCorrect, target) {
+  if (answered) return;
+  answered = true;
+  const fb = document.getElementById('feedback');
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+    else if (b === btn) b.classList.add('wrong');
+  });
+  if (isCorrect) {
+    score++;
+    if (fb) { fb.textContent = '✓ 正确!'; fb.className = 'feedback good'; }
+    setTimeout(() => { if (mode === 'practice') advanceStep(); }, 1000);
+  } else {
+    if (fb) { fb.innerHTML = '✗ 再想想<br><span style="font-size:18px;color:#6b7280;">正确: <strong style="color:#b45309;">' + target + '</strong></span>'; fb.className = 'feedback bad'; }
+    setTimeout(() => { if (mode === 'practice') advanceStep(); }, 1800);
+  }
+}
+
+// =====================
+// Done screen
+// =====================
+function renderDone() {
+  const total = SKILL_ORDER.length;
+  const stars = score === total ? '⭐⭐⭐' : score >= total * 0.6 ? '⭐⭐' : '⭐';
+  app.innerHTML = `
+    <div class="lesson-page">
+      <div class="complete-screen">
+        <div class="emoji">🎉</div>
+        <h2>太棒了!</h2>
+        <p>Great job!</p>
+        <div style="font-size:48px;margin:20px 0;">${stars}</div>
+        <p style="font-size:24px;color:#1f2937;">分数: ${score} / ${total}</p>
+        <div style="margin-top:32px;">
+          <button class="nav-btn" onclick="restartLesson()">再来一次</button>
+          <button class="nav-btn" onclick="goHome()" style="background:#10b981;box-shadow:0 4px 0 #047857;">回首页</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// =====================
+// Actions
+// =====================
+function startLesson(id) {
+  currentLesson = LESSONS.find(l => l.id === id);
+  if (!currentLesson) return;
+  lessonItems = buildLessonItems(currentLesson);
+  recordRecentItems(currentLesson.id, Object.values(lessonItems));
+  currentStep = 0;
+  score = 0;
+  mode = 'practice';
+  render();
+}
+function advanceStep() {
+  stopListening();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if (mode === 'bonus') { finishBonus(); return; }
+  if (currentStep < SKILL_ORDER.length - 1) {
+    currentStep++;
+    render();
+  } else {
+    finishLesson();
+  }
+}
+function finishLesson() {
+  const prev = progress[currentLesson.id] || { attempts: 0, bestScore: 0 };
+  progress[currentLesson.id] = {
+    attempts: prev.attempts + 1,
+    bestScore: Math.max(prev.bestScore, score),
+    lastScore: score
+  };
+  saveProgress(progress);
+  incDailyCount();
+  mode = 'done';
+  render();
+}
+
+// =====================
+// Review (flashcards)
+// =====================
+function startReview() {
+  const items = getReviewItems();
+  if (items.length === 0) return;
+  reviewItems = shuffle(items);
+  reviewIndex = 0;
+  mode = 'review';
+  render();
+}
+
+function renderReview() {
+  if (reviewItems.length === 0) return goHome();
+  const item = reviewItems[reviewIndex];
+  const total = reviewItems.length;
+  const percent = ((reviewIndex + 1) / total) * 100;
+  const safe = item.en.replace(/'/g, "\\'");
+
+  app.innerHTML = `
+    <div class="review-card">
+      <div class="top-bar">
+        <button class="back-btn" onclick="goHome()">← 返回</button>
+        <div class="step-label">📚 复习 ${reviewIndex + 1} / ${total}</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${percent}%;background:#6366f1;"></div></div>
+
+      <div class="review-topic-tag">${item.lessonIcon} ${item.lessonZh}</div>
+      <div class="english-word">${item.en}</div>
+      <div class="pinyin-hint">读法: ${item.hint}</div>
+      <div class="chinese-meaning">${item.zh}</div>
+
+      <button class="speak-btn" onclick="speak('${safe}', false)">🔊 听</button>
+      <button class="speak-btn slow" onclick="speak('${safe}', true)">🐢 慢速</button>
+
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:28px;">
+        <button class="nav-btn" onclick="prevReview()" ${reviewIndex === 0 ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>← 上一个</button>
+        <button class="nav-btn" onclick="nextReview()" style="background:#6366f1;box-shadow:0 4px 0 #4338ca;">
+          ${reviewIndex === total - 1 ? '完成 ✓' : '下一个 →'}
+        </button>
+      </div>
+    </div>
+  `;
+  setTimeout(() => speak(item.en, false), 350);
+}
+
+// =====================
+// Bonus questions (one-off, by skill)
+// =====================
+function startBonus(skill) {
+  const all = LESSONS.flatMap(l => l.items.map(i => ({ ...i, _lesson: l })));
+  const spellOk = (i) => !i.en.includes(' ') && i.en.length >= 1 && i.en.length <= 12;
+  const pool = skill === 'spelling' ? all.filter(spellOk) : all;
+  const it = pick(pool);
+  bonusSkill = skill;
+  bonusLesson = it._lesson;
+  bonusItem = it;
+  score = 0;
+  answered = false;
+  mode = 'bonus';
+  render();
+}
+
+function renderBonus() {
+  const skill = bonusSkill;
+  const item = bonusItem;
+  const info = SKILL_INFO[skill];
+  const header = `
+    <div class="top-bar">
+      <button class="back-btn" onclick="goHome()">← 返回</button>
+      <div class="step-label">⭐ 奖励题 ${info.icon} ${info.zh}</div>
+    </div>
+    <div class="skill-banner" style="color:#b45309;">⭐ 奖励题 — ${info.icon} ${info.zh}</div>
+    <div class="skill-prompt">${info.prompt}</div>
+  `;
+  let body = '';
+  if (skill === 'listening')      body = renderListeningBody(item, bonusLesson);
+  else if (skill === 'reading')   body = renderReadingBody(item, bonusLesson);
+  else if (skill === 'spelling')  body = renderSpellingBody(item);
+  else if (skill === 'speaking')  body = renderSpeakingBody(item);
+  else if (skill === 'understanding') body = renderUnderstandingBody(item, bonusLesson);
+
+  app.innerHTML = `<div class="lesson-page" style="border-color:#fbbf24;background:#fffbeb;">${header}${body}<div class="feedback" id="feedback"></div></div>`;
+
+  if (skill === 'listening' || skill === 'reading' || skill === 'speaking')
+    setTimeout(() => speak(item.en, false), 400);
+  if (skill === 'spelling') {
+    initSpellingState(item);
+    renderSpellingTiles();
+    setTimeout(() => speak(item.en, false), 400);
+  }
+}
+
+function finishBonus() {
+  if (score > 0) {
+    progress.bonusStars = (progress.bonusStars || 0) + 1;
+    saveProgress(progress);
+  }
+  mode = 'bonus-done';
+  render();
+}
+
+function renderBonusDone() {
+  const correct = score > 0;
+  const stars = progress.bonusStars || 0;
+  app.innerHTML = `
+    <div class="lesson-page" style="border-color:#fbbf24;background:#fffbeb;">
+      <div class="complete-screen">
+        <div class="emoji">${correct ? '⭐' : '😊'}</div>
+        <h2>${correct ? '答对了!' : '别担心, 再来一次!'}</h2>
+        <p>${correct ? 'Got it right!' : 'Try again!'}</p>
+        <p style="font-size:22px;color:#b45309;margin-top:12px;">奖励星星: ⭐ ${stars}</p>
+        <div style="margin-top:32px;">
+          <button class="nav-btn" onclick="startBonus('${bonusSkill}')">再来一题 →</button>
+          <button class="nav-btn" onclick="goHome()" style="background:#10b981;box-shadow:0 4px 0 #047857;">回首页</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function nextReview() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if (reviewIndex < reviewItems.length - 1) {
+    reviewIndex++;
+    render();
+  } else {
+    goHome();
+  }
+}
+function prevReview() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  if (reviewIndex > 0) { reviewIndex--; render(); }
+}
+function restartLesson() {
+  if (!currentLesson) return goHome();
+  startLesson(currentLesson.id);
+}
+function goHome() {
+  stopListening();
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  mode = 'home';
+  currentLesson = null;
+  render();
+}
+
+// expose
+window.startLesson = startLesson;
+window.advanceStep = advanceStep;
+window.restartLesson = restartLesson;
+window.goHome = goHome;
+window.speak = speak;
+window.startListening = startListening;
+window.answerChoice = answerChoice;
+window.tapLetter = tapLetter;
+window.deleteLetter = deleteLetter;
+window.resetSpelling = resetSpelling;
+window.startReview = startReview;
+window.nextReview = nextReview;
+window.prevReview = prevReview;
+window.startBonus = startBonus;
+
+render();
+</script>
+<script defer src="nullp-widget.js" data-game="Learn English"></script>
+</body>
+</html>
