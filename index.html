@@ -1126,12 +1126,34 @@ function resetSpelling() {
   renderSpellingTiles();
 }
 
+  // 🏅 Arcade titles (this game doesn't load the arcade shop, so the title goes straight into the arcade's save)
+  function arcadeEarnTitle(id, msg) {
+    try {
+      const KEY = 'daniels-arcade-v1', s = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+      s.owned = Array.isArray(s.owned) ? s.owned : []; if (s.owned.includes(id)) return false;
+      s.owned.push(id); s.equipped = Object.assign({}, s.equipped, { title: id });
+      localStorage.setItem(KEY, JSON.stringify(s));
+    } catch (e) { return false; }
+    const t = document.createElement('div');
+    t.textContent = msg; t.style.cssText = 'position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#2d3436;color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.4)';
+    document.body.appendChild(t); setTimeout(() => t.remove(), 4000);
+    return true;
+  }
+// 📚 Bookworm: 50 right answers · 🤫 🔤 Perfect Speller: 15 right in a row
+let titleStreak = 0;
+function titleRight(ok) {
+  if (!ok) { titleStreak = 0; return; }
+  let n = 0; try { n = (+localStorage.getItem('arcade_title_le_right') || 0) + 1; localStorage.setItem('arcade_title_le_right', String(n)); } catch (e) {}
+  if (n >= 50) arcadeEarnTitle('le-bookworm', '📚 BOOKWORM! 50 right answers — title unlocked!');
+  if (++titleStreak === 15) arcadeEarnTitle('le-perfect', '🔤 PERFECT SPELLER! 15 right in a row — a secret title!');
+}
 function checkSpelling() {
   const fb = document.getElementById('feedback');
   const built = spellAnswerIdx.map(i => spellTiles[i].ch).join('');
   const targetNoSpace = spellTarget.replace(/ /g, '');
   const correct = built.toLowerCase() === targetNoSpace.toLowerCase();
   answered = true;
+  titleRight(correct);
   if (correct) {
     score++;
     if (fb) { fb.textContent = '✓ 太棒了!'; fb.className = 'feedback good'; }
@@ -1162,6 +1184,7 @@ function answerChoice(btn, isCorrect, target) {
     if (b.dataset.correct === 'true') b.classList.add('correct');
     else if (b === btn) b.classList.add('wrong');
   });
+  titleRight(isCorrect);
   if (isCorrect) {
     score++;
     if (fb) { fb.textContent = '✓ 正确!'; fb.className = 'feedback good'; }
